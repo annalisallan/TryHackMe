@@ -11,7 +11,7 @@ Room | Tags | Difficulty | Description | Progress
 --- | --- | --- | --- | ---
 [Agent Sudo](https://tryhackme.com/room/agentsudoctf#) |enumerate. exploit, brute-force, hash cracking|Easy |You found a secret server located under the deep sea. Your task is to hack inside the server and reveal the truth. |[Complete](https://github.com/annalisallan/TryHackMe/tree/main/Agent%20Sudo)
 [Basic Pentesting](https://tryhackme.com/room/basicpentestingjt) |security, webapp, boot2root, cracking|Easy |This is a machine that allows you to practise web app hacking and privilege escalation| In Progress
-[OhSINT](https://tryhackme.com/room/ohsint#) |OSINT, Internet| Easy| Are you able to use open source intelligence to solve this challenge? | [Complete]([OhSINT](https://github.com/annalisallan/TryHackMe/tree/main/OhSINT))
+[OhSINT](https://tryhackme.com/room/ohsint#) |OSINT, Internet| Easy| Are you able to use open source intelligence to solve this challenge? | [Complete](https://github.com/annalisallan/TryHackMe/tree/main/OhSINT)
 [Pickle Rick](https://tryhackme.com/room/picklerick) |ctf, dirbuster, linux|Easy| A Rick and Morty CTF. Help turn Rick back into a human! |[Complete](https://github.com/annalisallan/TryHackMe/tree/main/Pickle%20Rick)
 [RootMe](https://tryhackme.com/room/rrootme#) |security, web, linux, privilege-escalation |Easy|A ctf for beginners, can you root me? |[Complete](https://github.com/annalisallan/TryHackMe/tree/main/RootMe)
 [Simple CTF](https://tryhackme.com/room/easyctf#)|security, enumeration, privesc|Easy|Beginner level CTF| [Complete](https://github.com/annalisallan/TryHackMe/tree/main/Simple%20CTF)
