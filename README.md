@@ -5,6 +5,7 @@ TryHackMe is an online platform for learning and teaching cybersecurity. It has 
 Learning Path | Difficulty | Description | Certificate
 --- | --- | --- | ---
 [Jr Penetration Tester](https://tryhackme.com/paths) | Intermediate |  This learning path covers the core technical skills that will allow you to succeed as a junior penetration tester. Upon completing this path, you will have the practical skills necessary to perform security assessments against web applications and enterprise infrastructure. | In Progress
+[Advent of Cyber 2023](https://tryhackme.com/room/adventofcyber2023) | Easy | Learn the basics by doing a new, beginner friendly security challenge every day leading up to Christmas. | In Progress
 
 # TryHackMe Rooms Completed
 Room | Tags | Difficulty | Description | Progress
